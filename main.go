@@ -7,6 +7,7 @@ import (
 	"image/png"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -29,12 +30,14 @@ func main() {
 	// Render the image
 	img := image.NewNRGBA(image.Rect(0, 0, image_width, image_height))
 
+	start_render := time.Now()
+
 	// Render to the image
-	for j := image_height - 1; j >= 0; j-- {
+	for j := 0; j < image_height; j++ {
 		fmt.Printf("Rendering line: %d \r", image_height-j)
 		for i := 0; i < image_width; i++ {
-			u := float64(i) / float64(image_width-1)
-			v := float64(j) / float64(image_height-1)
+			u := float64(image_width-i-1) / float64(image_width-1)
+			v := float64(image_height-j-1) / float64(image_height-1)
 			r := &Ray{
 				origin,
 				lower_left_corner.Add(horizontal.MultC(u)).Add(vertical.MultC(v)).Sub(origin),
@@ -54,7 +57,9 @@ func main() {
 		}
 	}
 
+	end_render := time.Now()
 	fmt.Println("Done rendering!                  ")
+	fmt.Printf("Time elapsed: %s\n", end_render.Sub(start_render))
 
 	// Write the image to a file
 	f, err := os.Create("render.png")
