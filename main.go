@@ -6,14 +6,29 @@ import (
 	"image/color"
 	"image/png"
 	"log"
+	"math/rand"
 	"os"
 	"time"
 )
 
+func clamp(x, min, max float64) float64 {
+	if x < min {
+		return min
+	}
+	if x > max {
+		return max
+	}
+	return x
+}
+
+func random_float64() float64 {
+	return rand.Float64()
+}
+
 func main() {
 
 	// Image
-	const image_width = 1280
+	const image_width = 512
 	const aspect_ratio = 16.0 / 10.0
 	const image_height = int(image_width / aspect_ratio)
 
@@ -32,14 +47,7 @@ func main() {
 	world.Add(&Sphere{NewVec3(0, -100000.5, -1), 100000})
 
 	// Camera
-	viewport_height := 1.6
-	viewport_width := aspect_ratio * viewport_height
-	focal_length := 1.0
-
-	origin := NewVec3(0, 1, 1)
-	horizontal := NewVec3(viewport_width, 0, 0)
-	vertical := NewVec3(0, viewport_height, 0)
-	lower_left_corner := origin.Sub(horizontal.DivC(2)).Sub(vertical.DivC(2)).Sub(NewVec3(0, 0, focal_length))
+	cam := NewCamera()
 
 	// Render the image
 	img := image.NewNRGBA(image.Rect(0, 0, image_width, image_height))
@@ -48,21 +56,25 @@ func main() {
 
 	// Render to the image
 	for j := 0; j < image_height; j++ {
-		fmt.Printf("Rendering line: %d \r", image_height-j)
+		fmt.Printf("Rendering... %d%% \r", (j*100)/image_height)
 		for i := 0; i < image_width; i++ {
-			u := float64(image_width-i-1) / float64(image_width-1)
-			v := float64(image_height-j-1) / float64(image_height-1)
-			r := &Ray{
-				origin,
-				lower_left_corner.Add(horizontal.MultC(u)).Add(vertical.MultC(v)).Sub(origin),
+
+			const samples_per_pixel = 32
+			pixel_color := NewVec3(0, 0, 0)
+
+			for k := 0; k < samples_per_pixel; k++ {
+				u := (float64(i) + random_float64()) / float64(image_width-1)
+				v := (float64(j) + random_float64()) / float64(image_height-1)
+				r := cam.GetRay(u, v)
+				new_color := r.RayColorInWorld(world)
+				pixel_color = pixel_color.Add(new_color)
 			}
-			pixel_color := r.RayColorInWorld(world)
 
-			ir := uint8(255.999 * pixel_color.x)
-			ig := uint8(255.999 * pixel_color.y)
-			ib := uint8(255.999 * pixel_color.z)
+			ir := uint8(255.999 * clamp(pixel_color.x/float64(samples_per_pixel), 0, 0.999))
+			ig := uint8(255.999 * clamp(pixel_color.y/float64(samples_per_pixel), 0, 0.999))
+			ib := uint8(255.999 * clamp(pixel_color.z/float64(samples_per_pixel), 0, 0.999))
 
-			img.Set(i, j, color.NRGBA{
+			img.Set(i, image_height-j-1, color.NRGBA{
 				R: ir,
 				G: ig,
 				B: ib,
