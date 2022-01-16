@@ -6,24 +6,10 @@ import (
 	"image/color"
 	"image/png"
 	"log"
-	"math/rand"
+	"math"
 	"os"
 	"time"
 )
-
-func clamp(x, min, max float64) float64 {
-	if x < min {
-		return min
-	}
-	if x > max {
-		return max
-	}
-	return x
-}
-
-func random_float64() float64 {
-	return rand.Float64()
-}
 
 func main() {
 
@@ -31,14 +17,16 @@ func main() {
 	const image_width = 512
 	const aspect_ratio = 16.0 / 10.0
 	const image_height = int(image_width / aspect_ratio)
+	const max_depth = 50
+	const samples_per_pixel = 100
 
 	// World
 	world := NewHittableList()
 
 	world.Add(&Sphere{NewVec3(0, 0, -1), 0.5})
+
 	world.Add(&Sphere{NewVec3(-1, 0.25, -1.5), 0.5})
 	world.Add(&Sphere{NewVec3(1, 0.25, -1), 0.5})
-
 	world.Add(&Sphere{NewVec3(0.25, 0, -4), 0.5})
 	world.Add(&Sphere{NewVec3(0.375, 0, -9), 0.5})
 
@@ -58,26 +46,25 @@ func main() {
 	for j := 0; j < image_height; j++ {
 		fmt.Printf("Rendering... %d%% \r", (j*100)/image_height)
 		for i := 0; i < image_width; i++ {
-
-			const samples_per_pixel = 32
 			pixel_color := NewVec3(0, 0, 0)
 
 			for k := 0; k < samples_per_pixel; k++ {
 				u := (float64(i) + random_float64()) / float64(image_width-1)
 				v := (float64(j) + random_float64()) / float64(image_height-1)
 				r := cam.GetRay(u, v)
-				new_color := r.RayColorInWorld(world)
+				new_color := r.RayColorInWorld(world, max_depth)
 				pixel_color = pixel_color.Add(new_color)
 			}
 
-			ir := uint8(255.999 * clamp(pixel_color.x/float64(samples_per_pixel), 0, 0.999))
-			ig := uint8(255.999 * clamp(pixel_color.y/float64(samples_per_pixel), 0, 0.999))
-			ib := uint8(255.999 * clamp(pixel_color.z/float64(samples_per_pixel), 0, 0.999))
+			scale := 1.0 / samples_per_pixel
+			fr := math.Sqrt(scale * pixel_color.x)
+			fg := math.Sqrt(scale * pixel_color.y)
+			fb := math.Sqrt(scale * pixel_color.z)
 
 			img.Set(i, image_height-j-1, color.NRGBA{
-				R: ir,
-				G: ig,
-				B: ib,
+				R: uint8(255.999 * clamp(fr, 0, 0.999)),
+				G: uint8(255.999 * clamp(fg, 0, 0.999)),
+				B: uint8(255.999 * clamp(fb, 0, 0.999)),
 				A: 255,
 			})
 		}

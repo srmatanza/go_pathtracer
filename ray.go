@@ -15,9 +15,16 @@ func (r *Ray) At(t float64) *Vec3 {
 	return r.origin.Add(r.direction.MultC(t))
 }
 
-func (r *Ray) RayColorInWorld(world *HittableList) *Vec3 {
-	if is_hit, hit_record := world.Hit(r, 0, infinity); is_hit {
-		return hit_record.normal.Add(NewVec3(1, 1, 1)).MultC(0.5)
+func (r *Ray) RayColorInWorld(world *HittableList, depth int) *Vec3 {
+
+	if depth <= 0 {
+		return NewVec3(0, 0, 0)
+	}
+
+	if is_hit, hit_record := world.Hit(r, 0.00001, infinity); is_hit {
+		target := hit_record.p.Add(hit_record.normal).Add(RandomUnitVector())
+		new_ray := &Ray{hit_record.p, target.Sub(hit_record.p)}
+		return new_ray.RayColorInWorld(world, depth-1).MultC(0.5)
 	}
 
 	unit_direction := r.direction.Unit()

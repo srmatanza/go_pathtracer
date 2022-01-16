@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"math/rand"
 )
 
 type Vec3 struct {
@@ -11,6 +12,24 @@ type Vec3 struct {
 
 func NewVec3(x, y, z float64) *Vec3 {
 	return &Vec3{x, y, z}
+}
+
+func RandomVec3(min, max float64) *Vec3 {
+	return &Vec3{rand_rng_float64(min, max), rand_rng_float64(min, max), rand_rng_float64(min, max)}
+}
+
+func RandomInUnitSphere() *Vec3 {
+	for {
+		p := RandomVec3(-1, 1)
+		if p.LengthSquared() >= 1 {
+			continue
+		}
+		return p
+	}
+}
+
+func RandomUnitVector() *Vec3 {
+	return RandomInUnitSphere().Unit()
 }
 
 func (v Vec3) String() string {
@@ -70,4 +89,23 @@ func (v *Vec3) Length() float64 {
 
 func (v *Vec3) LengthSquared() float64 {
 	return v.x*v.x + v.y*v.y + v.z*v.z
+}
+
+func clamp(x, min, max float64) float64 {
+	if x < min {
+		return min
+	}
+	if x > max {
+		return max
+	}
+	return x
+}
+
+func random_float64() float64 {
+	return rand.Float64()
+}
+
+func rand_rng_float64(min, max float64) float64 {
+	r := rand.Float64()
+	return (r * (max - min)) + min
 }
