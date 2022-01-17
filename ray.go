@@ -22,7 +22,9 @@ func (r *Ray) RayColorInWorld(world *HittableList, depth int) *Vec3 {
 	}
 
 	if is_hit, hit_record := world.Hit(r, 0.00001, infinity); is_hit {
-		target := hit_record.p.Add(hit_record.normal).Add(RandomUnitVector())
+		// target := hit_record.p.Add(hit_record.normal).Add(RandomInUnitSphere())
+		// target := hit_record.p.Add(hit_record.normal).Add(RandomUnitVector())
+		target := hit_record.p.Add(RandomInHemisphere(hit_record.normal))
 		new_ray := &Ray{hit_record.p, target.Sub(hit_record.p)}
 		return new_ray.RayColorInWorld(world, depth-1).MultC(0.5)
 	}

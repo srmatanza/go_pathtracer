@@ -32,6 +32,15 @@ func RandomUnitVector() *Vec3 {
 	return RandomInUnitSphere().Unit()
 }
 
+func RandomInHemisphere(normal *Vec3) *Vec3 {
+	ius := RandomInUnitSphere()
+	if ius.Dot(normal) > 0 {
+		return ius
+	} else {
+		return ius.Neg()
+	}
+}
+
 func (v Vec3) String() string {
 	return fmt.Sprintf("%f %f %f", v.x, v.y, v.z)
 }
