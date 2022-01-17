@@ -23,16 +23,23 @@ func main() {
 	// World
 	world := NewHittableList()
 
-	world.Add(&Sphere{NewVec3(0, 0, -1), 0.5})
+	lamb_red := &Lambertian{NewVec3(0.7, 0.3, 0.3)}
+	lamb_grey := &Lambertian{NewVec3(0.8, 0.8, 0.8)}
 
-	world.Add(&Sphere{NewVec3(-1, 0.25, -1.5), 0.5})
-	world.Add(&Sphere{NewVec3(1, 0.25, -1), 0.5})
-	world.Add(&Sphere{NewVec3(0.25, 0, -4), 0.5})
-	world.Add(&Sphere{NewVec3(0.375, 0, -9), 0.5})
+	metal_blue := &Metal{NewVec3(0.2, 0.2, 0.8), 1.0}
+	metal_silver := &Metal{NewVec3(0.8, 0.8, 0.8), 0.01}
 
-	world.Add(&Sphere{NewVec3(5, 4, -15), 2.5})
+	world.Add(&Sphere{NewVec3(0, 0, -1), lamb_red, 0.5})
 
-	world.Add(&Sphere{NewVec3(0, -100000.5, -1), 100000})
+	world.Add(&Sphere{NewVec3(-1.5, 0.25, -1.5), metal_silver, 0.75})
+
+	world.Add(&Sphere{NewVec3(1, 0.25, -1), metal_blue, 0.5})
+	world.Add(&Sphere{NewVec3(0.25, 0, -4), lamb_grey, 0.5})
+	world.Add(&Sphere{NewVec3(0.375, 0, -9), lamb_grey, 0.5})
+
+	world.Add(&Sphere{NewVec3(5, 4, -15), lamb_grey, 2.5})
+
+	world.Add(&Sphere{NewVec3(0, -100000.5, -1), Lambertian{NewVec3(0.8, 0.8, 0.0)}, 100000})
 
 	// Camera
 	cam := NewCamera()

@@ -4,6 +4,7 @@ import "math"
 
 type Sphere struct {
 	center *Vec3
+	mat    Material
 	radius float64
 }
 
@@ -32,7 +33,7 @@ func (s *Sphere) Hit(r *Ray, t_min, t_max float64) (bool, *HitRecord) {
 	t := root
 	p := r.At(t)
 	normal := p.Sub(s.center).DivC(s.radius)
-	rec := &HitRecord{p, normal, t, true}
+	rec := &HitRecord{p, normal, s.mat, t, true}
 	rec.SetFaceNormal(r, normal)
 
 	return true, rec

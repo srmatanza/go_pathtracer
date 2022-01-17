@@ -100,6 +100,11 @@ func (v *Vec3) LengthSquared() float64 {
 	return v.x*v.x + v.y*v.y + v.z*v.z
 }
 
+func (v *Vec3) NearZero() bool {
+	s := 1e-8
+	return (math.Abs(v.x) < s && math.Abs(v.y) < s && math.Abs(v.z) < s)
+}
+
 func clamp(x, min, max float64) float64 {
 	if x < min {
 		return min

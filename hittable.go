@@ -2,6 +2,7 @@ package main
 
 type HitRecord struct {
 	p, normal  *Vec3
+	mat        Material
 	t          float64
 	front_face bool
 }
