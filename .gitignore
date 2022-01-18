@@ -1,2 +1,3 @@
 *.png
+*.prof
 go_pathtracer
