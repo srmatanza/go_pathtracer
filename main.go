@@ -2,23 +2,18 @@ package main
 
 import (
 	"fmt"
-	"image"
-	"image/color"
 	"image/png"
 	"log"
-	"math"
 	"os"
 	"time"
 )
 
-func main() {
+// Render Settings
+const max_depth = 50
+const samples_per_job = 100
+const num_jobs = 1
 
-	// Image
-	const image_width = 512
-	const aspect_ratio = 16.0 / 10.0
-	const image_height = int(image_width / aspect_ratio)
-	const max_depth = 50
-	const samples_per_pixel = 100
+func main() {
 
 	// World
 	world := NewHittableList()
@@ -44,42 +39,17 @@ func main() {
 	// Camera
 	cam := NewCamera()
 
-	// Render the image
-	img := image.NewNRGBA(image.Rect(0, 0, image_width, image_height))
+	// Create the Render Image
+	render := NewRender(512, 16.0/10.0, samples_per_job, num_jobs)
 
 	start_render := time.Now()
 
 	// Render to the image
-	for j := 0; j < image_height; j++ {
-		fmt.Printf("Rendering... %d%% \r", (j*100)/image_height)
-		for i := 0; i < image_width; i++ {
-			pixel_color := NewVec3(0, 0, 0)
-
-			for k := 0; k < samples_per_pixel; k++ {
-				u := (float64(i) + random_float64()) / float64(image_width-1)
-				v := (float64(j) + random_float64()) / float64(image_height-1)
-				r := cam.GetRay(u, v)
-				new_color := r.RayColorInWorld(world, max_depth)
-				pixel_color = pixel_color.Add(new_color)
-			}
-
-			scale := 1.0 / samples_per_pixel
-			fr := math.Sqrt(scale * pixel_color.x)
-			fg := math.Sqrt(scale * pixel_color.y)
-			fb := math.Sqrt(scale * pixel_color.z)
-
-			img.Set(i, image_height-j-1, color.NRGBA{
-				R: uint8(255.999 * clamp(fr, 0, 0.999)),
-				G: uint8(255.999 * clamp(fg, 0, 0.999)),
-				B: uint8(255.999 * clamp(fb, 0, 0.999)),
-				A: 255,
-			})
-		}
-	}
+	img := render.RenderImage(cam, world)
 
 	end_render := time.Now()
-	fmt.Println("Done rendering!                  ")
-	fmt.Printf("Time elapsed: %s\n", end_render.Sub(start_render))
+	fmt.Println("Done rendering!")
+	fmt.Printf("Total time elapsed: %s\n", end_render.Sub(start_render))
 
 	// Write the image to a file
 	f, err := os.Create("render.png")
