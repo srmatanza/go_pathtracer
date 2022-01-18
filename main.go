@@ -1,19 +1,33 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"image/png"
 	"log"
 	"os"
+	"runtime/pprof"
 	"time"
 )
 
 // Render Settings
 const max_depth = 50
-const samples_per_job = 100
-const num_jobs = 1
+
+var cpuprofile = flag.String("prof", "", "Write a cpu profile to the specified file.")
+var samples_per_job = flag.Int("s", 100, "Number of samples per job.")
+var num_jobs = flag.Int("j", 1, "Number of jobs to run simultaneously.")
 
 func main() {
+	flag.Parse()
+
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
 
 	// World
 	world := NewHittableList()
@@ -40,7 +54,7 @@ func main() {
 	cam := NewCamera()
 
 	// Create the Render Image
-	render := NewRender(512, 16.0/10.0, samples_per_job, num_jobs)
+	render := NewRender(512, 16.0/10.0, *samples_per_job, *num_jobs)
 
 	start_render := time.Now()
 
