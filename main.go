@@ -6,6 +6,7 @@ import (
 	"image/png"
 	"log"
 	"os"
+	"runtime"
 	"runtime/pprof"
 	"time"
 )
@@ -14,6 +15,7 @@ import (
 const max_depth = 50
 
 var cpuprofile = flag.String("prof", "", "Write a cpu profile to the specified file.")
+var memprofile = flag.String("mem", "", "Write a memory profile to the specified file.")
 var samples_per_job = flag.Int("s", 100, "Number of samples per job.")
 var num_jobs = flag.Int("j", 1, "Number of jobs to run simultaneously.")
 
@@ -22,6 +24,8 @@ func main() {
 
 	if *cpuprofile != "" {
 		f, err := os.Create(*cpuprofile)
+		defer f.Close()
+
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -62,6 +66,21 @@ func main() {
 	img := render.RenderImage(cam, world)
 
 	end_render := time.Now()
+
+	// Write memory profile if necessary
+	if *memprofile != "" {
+		f, err := os.Create(*memprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer f.Close()
+
+		runtime.GC()
+		if err := pprof.WriteHeapProfile(f); err != nil {
+			log.Fatal("Couldn't write memory profile: ", err)
+		}
+	}
+
 	fmt.Println("Done rendering!")
 	fmt.Printf("Total time elapsed: %s\n", end_render.Sub(start_render))
 
