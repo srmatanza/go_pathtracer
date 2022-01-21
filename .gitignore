@@ -1,3 +1,4 @@
 *.png
 *.prof
+*.mem
 go_pathtracer
