@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"math"
-	"math/rand"
+
+	"github.com/valyala/fastrand"
 )
 
 type Vec3 struct {
@@ -116,10 +117,11 @@ func clamp(x, min, max float64) float64 {
 }
 
 func random_float64() float64 {
-	return rand.Float64()
+	// return rand.Float64()
+	return float64(fastrand.Uint32()) / float64(^uint32(0))
 }
 
 func rand_rng_float64(min, max float64) float64 {
-	r := rand.Float64()
+	r := random_float64()
 	return (r * (max - min)) + min
 }
