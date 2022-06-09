@@ -1,3 +1,6 @@
+6/8/2022
+Actually, the biggest performance bottleneck turned out to be the random number generator. I switched to a much faster third party implementation, and now the renderer can saturate the CPU.
+
 1/18/2022
 Because the bulk of memory used in this application is from one-off allocations of Vec3 and Ray structs, it may be a text-book use case for memory pools. First though, let's try and make a go benchmark using our renderer.
 
