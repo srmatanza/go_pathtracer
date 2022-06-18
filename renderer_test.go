@@ -11,7 +11,9 @@ func BenchmarkRenderImage(b *testing.B) {
 
 	cam := NewCamera()
 
-	render := NewRender(512, 16.0/10.0, 16, 4)
+	render := NewRender(512, 16.0/10.0, 2, 16)
 
-	render.RenderImage(cam, world)
+	for n := 0; n < b.N; n++ {
+		render.RenderImage(cam, world)
+	}
 }
