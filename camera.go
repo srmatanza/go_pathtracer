@@ -4,7 +4,7 @@ type Camera struct {
 	origin,
 	lower_left_corner,
 	horizontal,
-	vertical *Vec3
+	vertical Vec3
 }
 
 func NewCamera() *Camera {
@@ -26,8 +26,8 @@ func NewCamera() *Camera {
 	}
 }
 
-func (c *Camera) GetRay(u, v float64) *Ray {
-	return &Ray{
+func (c *Camera) GetRay(u, v float64) Ray {
+	return Ray{
 		c.origin,
 		c.lower_left_corner.Add(c.horizontal.MultC(u)).Add(c.vertical.MultC(v)).Sub(c.origin),
 	}

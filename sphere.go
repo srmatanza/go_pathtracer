@@ -3,12 +3,12 @@ package main
 import "math"
 
 type Sphere struct {
-	center *Vec3
+	center Vec3
 	mat    Material
 	radius float64
 }
 
-func (s *Sphere) Hit(r *Ray, t_min, t_max float64) (bool, *HitRecord) {
+func (s *Sphere) Hit(r Ray, t_min, t_max float64) (bool, *HitRecord) {
 	oc := r.origin.Sub(s.center)
 	a := r.direction.LengthSquared()
 	half_b := oc.Dot(r.direction)

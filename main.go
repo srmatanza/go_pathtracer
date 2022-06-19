@@ -36,11 +36,11 @@ func main() {
 	// World
 	world := NewHittableList()
 
-	lamb_red := &Lambertian{NewVec3(0.7, 0.3, 0.3)}
-	lamb_grey := &Lambertian{NewVec3(0.8, 0.8, 0.8)}
+	lamb_red := Lambertian{NewVec3(0.7, 0.3, 0.3)}
+	lamb_grey := Lambertian{NewVec3(0.8, 0.8, 0.8)}
 
-	metal_blue := &Metal{NewVec3(0.2, 0.2, 0.8), 1.0}
-	metal_silver := &Metal{NewVec3(0.8, 0.8, 0.8), 0.01}
+	metal_blue := Metal{NewVec3(0.2, 0.2, 0.8), 1.0}
+	metal_silver := Metal{NewVec3(0.8, 0.8, 0.8), 0.01}
 
 	world.Add(&Sphere{NewVec3(0, 0, -1), lamb_red, 0.5})
 

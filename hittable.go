@@ -1,13 +1,13 @@
 package main
 
 type HitRecord struct {
-	p, normal  *Vec3
+	p, normal  Vec3
 	mat        Material
 	t          float64
 	front_face bool
 }
 
-func (h *HitRecord) SetFaceNormal(r *Ray, outward_normal *Vec3) {
+func (h *HitRecord) SetFaceNormal(r Ray, outward_normal Vec3) {
 	h.front_face = r.direction.Dot(outward_normal) < 0
 	if h.front_face {
 		h.normal = outward_normal
@@ -17,7 +17,7 @@ func (h *HitRecord) SetFaceNormal(r *Ray, outward_normal *Vec3) {
 }
 
 type Hittable interface {
-	Hit(r *Ray, t_min, t_max float64) (bool, *HitRecord)
+	Hit(r Ray, t_min, t_max float64) (bool, *HitRecord)
 }
 
 type HittableList struct {
@@ -38,8 +38,8 @@ func (hl *HittableList) Add(h Hittable) {
 	hl.objects = append(hl.objects, h)
 }
 
-func (hl *HittableList) Hit(r *Ray, t_min, t_max float64) (bool, *HitRecord) {
-	var temp_rec *HitRecord = nil
+func (hl *HittableList) Hit(r Ray, t_min, t_max float64) (bool, *HitRecord) {
+	var temp_rec *HitRecord
 	hit_anything := false
 	closest_so_far := t_max
 

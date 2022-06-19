@@ -95,7 +95,7 @@ func (r *Render) renderImage(cam *Camera, world *HittableList) {
 
 			scale := 1.0 / float64(r.samples_per_job)
 			pixel_color = pixel_color.MultC(scale)
-			sample_img[i+j*r.image_width] = *pixel_color
+			sample_img[i+j*r.image_width] = pixel_color
 		}
 	}
 	d_render := time.Since(render_start_t)
@@ -112,7 +112,7 @@ func (r *Render) renderImage(cam *Camera, world *HittableList) {
 			new_color := sample_pixel.MultC(float64(r.samples_per_job)).Add(img_pixel.MultC(float64(r.samples)))
 			new_color = new_color.DivC(float64(r.samples_per_job + r.samples))
 
-			r.img[i+j*r.image_width] = *new_color
+			r.img[i+j*r.image_width] = new_color
 		}
 	}
 	d_combine := time.Since(combine_start_t)
