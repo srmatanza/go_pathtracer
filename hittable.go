@@ -38,18 +38,16 @@ func (hl *HittableList) Add(h Hittable) {
 	hl.objects = append(hl.objects, h)
 }
 
-func (hl *HittableList) Hit(r Ray, t_min, t_max float64) (bool, *HitRecord) {
-	var temp_rec *HitRecord
-	hit_anything := false
+func (hl *HittableList) Hit(r Ray, t_min, t_max float64) (hit_anything bool, ret_rec *HitRecord) {
 	closest_so_far := t_max
 
 	for _, obj := range hl.objects {
 		if is_hit, rec := obj.Hit(r, t_min, closest_so_far); is_hit {
 			hit_anything = true
 			closest_so_far = rec.t
-			temp_rec = rec
+			ret_rec = rec
 		}
 	}
 
-	return hit_anything, temp_rec
+	return
 }
