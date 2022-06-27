@@ -16,7 +16,7 @@ const max_depth = 50
 
 var cpuprofile = flag.String("prof", "", "Write a cpu profile to the specified file.")
 var memprofile = flag.String("mem", "", "Write a memory profile to the specified file.")
-var samples_per_job = flag.Int("s", 100, "Number of samples per job.")
+var total_samples = flag.Int("s", 100, "Number of samples to render.")
 var num_jobs = flag.Int("j", 1, "Number of jobs to run simultaneously.")
 
 func main() {
@@ -58,7 +58,7 @@ func main() {
 	cam := NewCamera()
 
 	// Create the Render Image
-	render := NewRender(512, 16.0/10.0, *samples_per_job, *num_jobs)
+	render := NewRender(512, 16.0/10.0, *total_samples, *num_jobs)
 
 	start_render := time.Now()
 
